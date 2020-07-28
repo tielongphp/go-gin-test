@@ -3,4 +3,4 @@ logs*
 go.sum
 dogo.json
 bin/*
-.env.dev
+#dev.ini

@@ -1,16 +1,17 @@
 package commands
 
 import (
-	"github.com/urfave/cli"
-	"path"
 	"os"
+	"path"
+
+	"github.com/urfave/cli"
 )
 
 // Global CLI flags
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "env",
-		Usage:  "use -env=dev/stage/prod",
+		Usage:  "use --env=dev/stage/prod",
 		EnvVar: "GO_GIN_TEST_ENV",
 	},
 	cli.BoolFlag{
@@ -39,7 +40,7 @@ var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:   "log-dir, ld",
 		Usage:  "log dir",
-		Value:  path.Join(os.Getenv("APP_PATH"),"logs/"),
+		Value:  path.Join(os.Getenv("APP_PATH"), "logs/"),
 		EnvVar: "GO_GIN_TEST_LOG_DIR",
 	},
 }

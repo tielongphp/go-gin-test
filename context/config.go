@@ -2,11 +2,14 @@ package context
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/op/go-logging"
 	"github.com/urfave/cli"
-	"os"
+	"gopkg.in/ini.v1"
+
 	"go-gin-test/tool"
-	"time"
 )
 
 // Config provides a struct in which application configuration is stored.
@@ -31,12 +34,38 @@ type Config struct {
 	myLogger       *tool.MyLog
 	logDir         string
 	environment    string
+	Cfg            *ini.File
 }
 
 func (c *Config) GetEnv() string {
+	if c.environment == "" {
+		c.environment = "dev"
+	}
 	return c.environment
 }
 
+func (c *Config) GetConfigFile() string {
+	env := c.GetEnv()
+	if env == "" {
+		c.configFile = "dev.ini"
+	} else {
+		c.configFile = env + ".ini"
+	}
+	return c.configFile
+}
+
+func (c *Config) GetCfg() *ini.File {
+	cfg, err := ini.LoadSources(ini.LoadOptions{
+		IgnoreInlineComment: true,
+	}, c.GetConfigFile())
+
+	if nil != err {
+		fmt.Println("fail to open "+c.configFile, err)
+		os.Exit(1)
+	}
+	c.Cfg = cfg
+	return c.Cfg
+}
 
 func (c *Config) GetMyLogger() *tool.MyLog {
 	return c.myLogger
@@ -72,7 +101,8 @@ func NewConfig(ctx *cli.Context) *Config {
 	c.setLog()
 	c.SetMyLogger()
 	c.SetLogDir(ctx)
-
+	c.GetCfg()
+	c.GetConfigFile()
 	return c
 }
 

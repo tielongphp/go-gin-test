@@ -1,9 +1,11 @@
 package main
 
 import (
-	"go-gin-test/commands"
-	"github.com/urfave/cli"
 	"os"
+
+	"github.com/urfave/cli"
+
+	"go-gin-test/commands"
 )
 
 var version = "development"

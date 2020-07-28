@@ -2,14 +2,17 @@ package commands
 
 import (
 	"fmt"
-	"go-gin-test/context"
+
 	"github.com/urfave/cli"
+
+	"go-gin-test/context"
 )
 
 // Prints current configuration
 var ConfigCommand = cli.Command{
-	Name:   "config",
-	Usage:  "Displays global configuration values",
+	Name:  "config",
+	Usage: "Displays global configuration values",
+	//Flags:  GlobalFlags,
 	Action: configAction,
 }
 
@@ -18,7 +21,7 @@ func configAction(ctx *cli.Context) error {
 
 	fmt.Printf("NAME                  VALUE\n")
 	fmt.Printf("debug                 %t\n", conf.Debug())
-	fmt.Printf("config-file           %s\n", conf.ConfigFile())
+	//fmt.Printf("config-file           %s\n", conf.ConfigFile())
 	fmt.Printf("app-name              %s\n", conf.AppName())
 	fmt.Printf("app-version           %s\n", conf.AppVersion())
 	fmt.Printf("app-copyright         %s\n", conf.AppCopyright())
