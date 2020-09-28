@@ -24,5 +24,7 @@ func Start(conf *context.Config) {
 	// DB
 	models.Init(conf)
 
+	defer models.CloseDB()
+
 	app.Run(fmt.Sprintf("%s:%d", conf.HttpServerHost(), conf.HttpServerPort()))
 }
