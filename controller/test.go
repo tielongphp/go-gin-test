@@ -5,36 +5,34 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"go-gin-test/common"
 	"go-gin-test/context"
+	"go-gin-test/model/request"
+	"go-gin-test/response"
 	"go-gin-test/service/shop_order_service"
+	"go-gin-test/utils"
 )
 
 func Test(router *gin.RouterGroup, conf *context.Config) {
 	router.GET("/a", func(c *gin.Context) {
 		// 查询
-		articleService := shop_order_service.ShopOrder{
-			OrderID: 1,
-			// MainOrderID 区分主订单作用（0为主订单，大于0是子订单）
-
+		var so request.ShopOrderApiInfoParams
+		_ = c.BindQuery(&so) // get参数
+		// 参数非空验证
+		ShopOrderVerify := utils.Rules{
+			"OrderID": {utils.NotEmpty()},
 		}
-		data, _ := articleService.GetShopOrder(1)
+		ShopOrderVerifyErr := utils.Verify(so, ShopOrderVerify)
 
-		// 添加
-		articleServiceAdd := shop_order_service.ShopOrder{
-			//OrderID:    5,
-			OrderSn:    "202020200202",
-			CreateTime: 15512121212,
+		if ShopOrderVerifyErr != nil {
+			response.FailWithMsg(ShopOrderVerifyErr.Error(), c)
+			return
 		}
-		flag1, _ := articleServiceAdd.Add()
-
-		fmt.Println("添加：", flag1)
-
-		if data != nil {
-			common.FormatResponse(c, 10000, "成功", data)
+		// model层读写分离实现
+		err, info := shop_order_service.GetShopOrder(so.OrderID)
+		if err != nil {
+			response.FailWithMsg(fmt.Sprintf("获取失败：%v", err), c)
 		} else {
-			common.GetCodeMsg("DATA_NOT_FIND", c)
-			//common.FormatResponseWithoutData(c, common.MsgCode{Code: }, "成功")
+			response.OkWithData(info, c)
 		}
 
 	})

@@ -1,45 +1,39 @@
 package shop_order_service
 
 import (
-	"go-gin-test/models"
+	"go-gin-test/model"
 )
 
-type ShopOrder struct {
-	OrderID int
-	// MainOrderID 区分主订单作用（0为主订单，大于0是子订单）
-	MainOrderID int
-	// OrderSn 订单编号
-	OrderSn string
-	// UserID 会员ID
-	UserID int
-	// OrderStatus 支付状态：0-未支付，1-支付成功，2-订单取消,3-退款
-	OrderStatus int
-	// Consignee 收货人地址
-	Consignee string
-	// Province 省份
-	Province   int
-	CreateTime int
-	// ...
-}
+//func Add() (int, error) {
+//	shopOrder := map[string]interface{}{
+//		"order_id":    a.OrderID,
+//		"order_sn":    a.OrderSn,
+//		"create_time": a.CreateTime,
+//		// ...
+//	}
+//	orderId, err := models.AddShopOrder(shopOrder)
+//	if orderId == 0 || err != nil {
+//		return 0, err
+//	}
+//	return orderId, nil
+//}
 
-func (a *ShopOrder) Add() (int, error) {
-	shopOrder := map[string]interface{}{
-		"order_id":    a.OrderID,
-		"order_sn":    a.OrderSn,
-		"create_time": a.CreateTime,
-		// ...
-	}
-	orderId, err := models.AddShopOrder(shopOrder)
-	if orderId == 0 || err != nil {
-		return 0, err
-	}
-	return orderId, nil
-}
+func GetShopOrder(orderId int) (err error, info interface{}) {
+	var shopOrderApi model.ShopOrder
 
-func (a *ShopOrder) GetShopOrder(orderId int) (*models.ShopOrder, error) {
-	shopOrder, err := models.GetShopOrderByOrderId(orderId)
-	if err != nil {
-		return nil, err
-	}
-	return shopOrder, nil
+	// 指定使用从库
+	//db := model.DB.Clauses(dbresolver.Read).Model(&model.ShopOrder{})
+
+	// 指定使用主库
+	//db := model.DB.Clauses(dbresolver.Write).Model(&model.ShopOrder{})
+
+	// 自动读写分离（写：选择主库，读：选择从库）
+	db := model.DB.Model(&model.ShopOrder{})
+
+	//if orderId > 0 {
+	db = db.Where("order_id = ?", orderId)
+	//}
+
+	err = db.First(&shopOrderApi).Error
+	return err, shopOrderApi
 }

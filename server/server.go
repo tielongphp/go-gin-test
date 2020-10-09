@@ -2,9 +2,11 @@ package server
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
+
 	"go-gin-test/context"
-	"go-gin-test/models"
+	"go-gin-test/model"
 )
 
 // Start the REST API server using the configuration provided
@@ -22,9 +24,8 @@ func Start(conf *context.Config) {
 	// route
 	registerRoutes(app, conf)
 	// DB
-	models.Init(conf)
-
-	defer models.CloseDB()
+	model.Init(conf)
+	//defer model.CloseDB()
 
 	app.Run(fmt.Sprintf("%s:%d", conf.HttpServerHost(), conf.HttpServerPort()))
 }

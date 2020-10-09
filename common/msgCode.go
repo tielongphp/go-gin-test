@@ -1,6 +1,10 @@
 package common
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+
+	"go-gin-test/response"
+)
 
 const TheOther = "THE_OTHER"
 const ParamError = "PARAM_ERROR"
@@ -9,8 +13,8 @@ const TOKEN_EXPIRE = "TOKEN_EXPIRE"
 const DATA_NOT_FIND = "DATA_NOT_FIND"
 
 type MsgCode struct {
-	Code int
-	Msg  string
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 func getAllAllCodeMsg() map[string]MsgCode {
@@ -27,29 +31,23 @@ func getAllAllCodeMsg() map[string]MsgCode {
 func GetCodeMsg(msg string, c *gin.Context) {
 	codeMsgMap := getAllAllCodeMsg()
 	if data, ok := codeMsgMap[msg]; ok {
-		c.JSON(200, &resultWithoutDate{
-			data.Code,
-			data.Msg,
-		})
+		response.ResultNotWithData(data.Code, data.Msg, c)
 	} else {
-		c.JSON(200, &resultWithoutDate{
-			codeMsgMap[SystemError].Code,
-			codeMsgMap[SystemError].Msg,
-		})
+		response.ResultNotWithData(codeMsgMap[SystemError].Code, codeMsgMap[SystemError].Msg, c)
 	}
 }
 
-func returnCodeMsg(msg string, c *gin.Context) resultWithoutDate {
+func returnCodeMsg(msg string, c *gin.Context) response.NotWithData {
 	codeMsgMap := getAllAllCodeMsg()
 	if data, ok := codeMsgMap[msg]; ok {
-		return resultWithoutDate{
-			data.Code,
-			data.Msg,
+		return response.NotWithData{
+			Code: data.Code,
+			Msg:  data.Msg,
 		}
 	} else {
-		return resultWithoutDate{
-			codeMsgMap[SystemError].Code,
-			codeMsgMap[SystemError].Msg,
+		return response.NotWithData{
+			Code: codeMsgMap[SystemError].Code,
+			Msg:  codeMsgMap[SystemError].Msg,
 		}
 	}
 }
