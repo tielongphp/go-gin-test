@@ -4,20 +4,9 @@ import (
 	"go-gin-test/model"
 )
 
-//func Add() (int, error) {
-//	shopOrder := map[string]interface{}{
-//		"order_id":    a.OrderID,
-//		"order_sn":    a.OrderSn,
-//		"create_time": a.CreateTime,
-//		// ...
-//	}
-//	orderId, err := models.AddShopOrder(shopOrder)
-//	if orderId == 0 || err != nil {
-//		return 0, err
-//	}
-//	return orderId, nil
-//}
-
+/**
+ * 查询示列
+ */
 func GetShopOrder(orderId int) (err error, info interface{}) {
 	var shopOrderApi model.ShopOrder
 
