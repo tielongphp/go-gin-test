@@ -14,8 +14,8 @@ package model
 type ShopOrder struct {
 	//gorm.Model
 	OrderID     int    `gorm:"primary_key;column:order_id" json:"order_id"` //设置一个普通的索引，没有设置索引名，gorm会自动命名
-	CreateTime  int    `gorm:"column:create_time" json:"create_time"`
-	UpdateTime  int    `gorm:"column:update_time" json:"update_time"`
+	CreateTime  int64  `gorm:"column:create_time" json:"create_time"`
+	UpdateTime  int64  `gorm:"column:update_time" json:"update_time"`
 	MainOrderID int    `gorm:"column:main_order_id" json:"main_order_id"`
 	OrderSn     string `gorm:"column:order_sn" json:"order_sn"`
 	UserID      string `gorm:"column:user_id" json:"user_id"`
