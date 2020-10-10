@@ -1,4 +1,4 @@
-package server
+package middleware
 
 import (
 	"fmt"
@@ -6,13 +6,13 @@ import (
 	"github.com/lestrrat/go-file-rotatelogs"
 	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
-	"io/ioutil"
-	"os"
 	"go-gin-test/context"
 	"go-gin-test/tool"
+	"io/ioutil"
+	"os"
+	"path"
 	"strings"
 	"time"
-	"path"
 )
 
 func Logger(conf *context.Config) gin.HandlerFunc {
@@ -25,10 +25,10 @@ func Logger(conf *context.Config) gin.HandlerFunc {
 	logClient.SetOutput(src)
 	logClient.SetLevel(log.DebugLevel)
 	apiLogPath := conf.GetLogDir()
-	baseLogPath := path.Join(os.Getenv("APP_PATH"),apiLogPath,"log")
+	baseLogPath := path.Join(os.Getenv("APP_PATH"), apiLogPath, "log")
 	writer, err := rotatelogs.New(
 		baseLogPath+".%Y-%m-%d.log",
-		rotatelogs.WithLinkName(baseLogPath),       // 生成软链，指向最新日志文件
+		rotatelogs.WithLinkName(baseLogPath),      // 生成软链，指向最新日志文件
 		rotatelogs.WithMaxAge(7*24*time.Hour),     // 文件最大保存时间
 		rotatelogs.WithRotationTime(24*time.Hour), // 日志切割时间间隔
 	)
@@ -97,7 +97,7 @@ func Logger(conf *context.Config) gin.HandlerFunc {
 
 		arguments := ""
 		if strings.ToUpper(method) == "POST" {
-			argument,_ := ioutil.ReadAll(c.Request.Body)
+			argument, _ := ioutil.ReadAll(c.Request.Body)
 			arguments = string(argument)
 		}
 

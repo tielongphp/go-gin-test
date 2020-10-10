@@ -1,4 +1,4 @@
-package model
+package initialize
 
 import (
 	"fmt"
@@ -12,15 +12,13 @@ import (
 
 	//"gorm.io/plugin/dbresolver"
 
-	"go-gin-test/context"
+	"go-gin-test/global"
 )
-
-var DB *gorm.DB
 
 //var DB = Init()
 
 // Opening a database
-func Init(conf *context.Config) {
+func MysqlInit() {
 	var (
 		err                                       error
 		dbName, user, password, host, tablePrefix string
@@ -35,9 +33,9 @@ func Init(conf *context.Config) {
 		dbName2, user2, password2, host2 string
 	)
 
-	masterSec, err := conf.GetCfg().GetSection("database_master")
-	slaveSec1, err1 := conf.GetCfg().GetSection("database_slave1")
-	slaveSec2, err2 := conf.GetCfg().GetSection("database_slave2")
+	masterSec, err := global.CTX_CONFIG.GetCfg().GetSection("database_master")
+	slaveSec1, err1 := global.CTX_CONFIG.GetCfg().GetSection("database_slave1")
+	slaveSec2, err2 := global.CTX_CONFIG.GetCfg().GetSection("database_slave2")
 
 	if err != nil {
 		log.Fatal("Fail to get ini section 'database_master': %v", err)
@@ -130,14 +128,14 @@ func Init(conf *context.Config) {
 			SetMaxIdleConns(100).
 			SetMaxOpenConns(200))
 
-	DB = db
+	global.DB = db
 }
 
 func CloseDB() {
-	//defer DB.Closed()
+	//defer global.DB.Closed()
 }
 
 // Using this function to get a connection, you can create your connection pool here.
 func GetDB() *gorm.DB {
-	return DB
+	return global.DB
 }

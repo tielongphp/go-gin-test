@@ -1,28 +1,16 @@
-package server
+package router
 
 import (
 	"github.com/gin-gonic/gin"
-
 	"go-gin-test/context"
-	"go-gin-test/controller"
 	"go-gin-test/controller/v1"
-	"go-gin-test/response"
+	"go-gin-test/middleware"
 )
 
-func registerRoutes(app *gin.Engine, conf *context.Config) {
-	//routes
-	// 探针
-	app.GET("/", func(c *gin.Context) {
-		response.Ok(c)
-	}, Logger(conf))
-
-	goFePrefix := app.Group("/test", Logger(conf))
-	{
-		controller.Test(goFePrefix, conf)
-	}
-
-	shopOrderRouter := app.Group("shopOrder")
-	//Use(middleware.JWTAuth())
+func InitShopOrderRouter(app *gin.RouterGroup, conf *context.Config) {
+	shopOrderRouter := app.Group("shopOrder").
+		//Use(middleware.JWTAuth()).
+		Use(middleware.Cors()) // 跨域
 	{
 		shopOrderRouter.GET("getInfo", v1.GetShopOrderInfoByOrderId) // 查询one
 		shopOrderRouter.GET("getList", v1.GetShopOrderList)          // 查询列表
