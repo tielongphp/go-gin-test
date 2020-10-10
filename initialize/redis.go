@@ -11,10 +11,11 @@ import (
 
 func RedisInit() {
 	redisCfg, err := global.CTX_CONFIG.GetCfg().GetSection("redis")
+	DB, _ := redisCfg.Key("DB").Int()
 	var client = redis.NewClient(&redis.Options{
 		Addr:     redisCfg.Key("Addr").String(),
 		Password: redisCfg.Key("Password").String(), // no password set
-		//DB:       redisCfg.Key("DB").Int(),          // use default DB
+		DB:       DB,                                // use default DB
 	})
 	pong, err := client.Ping().Result()
 	if err != nil {

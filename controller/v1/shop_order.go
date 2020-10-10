@@ -1,10 +1,14 @@
 package v1
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"go-gin-test/global"
 	"go-gin-test/model"
 	"go-gin-test/model/request"
 	"go-gin-test/response"
@@ -28,12 +32,22 @@ func GetShopOrderInfoByOrderId(c *gin.Context) {
 		response.FailWithMsg(ShopOrderVerifyErr.Error(), c)
 		return
 	}
-	// model层读写分离实现
-	err, info := shop_order_service.GetShopOrder(so.OrderID)
-	if err != nil {
-		response.FailWithMsg(fmt.Sprintf("获取失败：%v", err), c)
-	} else {
+
+	infoJson, _ := global.REDIS.Get("shop_order_" + strconv.Itoa(so.OrderID)).Result()
+	if len(infoJson) > 0 {
+		var info model.ShopOrder
+		// 将字符串反解析为结构体
+		json.Unmarshal([]byte(infoJson), &info)
 		response.OkWithData(info, c)
+	} else {
+		err, info := shop_order_service.GetShopOrder(so.OrderID)
+		if err != nil {
+			response.FailWithMsg(fmt.Sprintf("获取失败：%v", err), c)
+		} else {
+			infoJson, _ := json.Marshal(info)
+			global.REDIS.Set("shop_order_"+strconv.Itoa(so.OrderID), infoJson, 1000*1000*1000*60*60*24)
+			response.OkWithData(info, c)
+		}
 	}
 }
 
