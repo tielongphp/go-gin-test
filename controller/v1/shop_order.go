@@ -38,6 +38,30 @@ func GetShopOrderInfoByOrderId(c *gin.Context) {
 }
 
 // @Tags ShopOrder
+// @Summary 查询ShopOrder列表
+// @Router /shopOrder/getList [get]
+func GetShopOrderList(c *gin.Context) {
+	var pageInfo request.PageInfo
+	_ = c.BindQuery(&pageInfo)
+	PageVerifyErr := utils.Verify(pageInfo, utils.CustomizeMap["PageVerify"])
+	if PageVerifyErr != nil {
+		response.FailWithMsg(PageVerifyErr.Error(), c)
+		return
+	}
+	err, list, total := shop_order_service.GetShopOrderList(pageInfo)
+	if err != nil {
+		response.FailWithMsg(fmt.Sprintf("获取数据失败，%v", err), c)
+	} else {
+		response.OkWithData(response.PageResult{
+			List:     list,
+			Total:    total,
+			Page:     pageInfo.Page,
+			PageSize: pageInfo.PageSize,
+		}, c)
+	}
+}
+
+// @Tags ShopOrder
 // @Summary 更新ShopOrder
 // @Router /shopOrder/updateOne [put]
 func UpdateShopOrder(c *gin.Context) {

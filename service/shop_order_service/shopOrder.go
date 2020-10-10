@@ -1,7 +1,13 @@
 package shop_order_service
 
 import (
+	"fmt"
+	"unsafe"
+
+	"gorm.io/plugin/dbresolver"
+
 	"go-gin-test/model"
+	"go-gin-test/model/request"
 )
 
 /**
@@ -25,6 +31,32 @@ func GetShopOrder(orderId int) (err error, info interface{}) {
 
 	err = db.First(&shopOrderApi).Error
 	return err, shopOrderApi
+}
+
+/**
+ * 查询示列
+ */
+func GetShopOrderList(info request.PageInfo) (err error, list interface{}, total int) {
+
+	limit := info.PageSize
+	offset := info.PageSize * (info.Page - 1)
+	// 指定使用从库
+	//db := model.DB.Clauses(dbresolver.Read).Model(&model.ShopOrder{})
+	// 指定使用主库
+	db := model.DB.Clauses(dbresolver.Write).Model(&model.ShopOrder{})
+
+	// 自动读写分离（写：选择主库，读：选择从库）
+	//db := model.DB.Model(&model.ShopOrder{})
+	var shop []model.ShopOrder
+	db.Count((*int64)(unsafe.Pointer(&total)))
+	err = db.Limit(limit).Offset(offset).Find(&shop).Error
+	if len(shop) > 0 {
+		for k := range shop {
+			fmt.Println(k)
+		}
+	}
+	return err, shop, total
+
 }
 
 /**

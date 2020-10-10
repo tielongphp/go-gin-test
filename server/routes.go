@@ -24,7 +24,8 @@ func registerRoutes(app *gin.Engine, conf *context.Config) {
 	shopOrderRouter := app.Group("shopOrder")
 	//Use(middleware.JWTAuth())
 	{
-		shopOrderRouter.GET("getInfo", v1.GetShopOrderInfoByOrderId) // 查询
+		shopOrderRouter.GET("getInfo", v1.GetShopOrderInfoByOrderId) // 查询one
+		shopOrderRouter.GET("getList", v1.GetShopOrderList)          // 查询列表
 		shopOrderRouter.PUT("updateOne", v1.UpdateShopOrder)         // 更新
 		shopOrderRouter.POST("addOne", v1.AddShopOrder)              // 添加
 		shopOrderRouter.DELETE("delOne", v1.DelShopOrder)            // 删除
