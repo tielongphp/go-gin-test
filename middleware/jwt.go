@@ -5,8 +5,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"go-gin-test/global"
+	"go-gin-test/model"
 	"go-gin-test/model/request"
 	"go-gin-test/response"
+	"go-gin-test/service/jwt_black_service"
+
 	"time"
 )
 
@@ -14,6 +17,9 @@ func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localSstorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
 		token := c.Request.Header.Get("x-token")
+		modelToken := model.JwtBlacklist{
+			Jwt: token,
+		}
 		if token == "" {
 			response.Result(response.ERROR, gin.H{
 				"reload": true,
@@ -22,12 +28,13 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 
-		// todo token验证 if....
-		//response.Result(response.ERROR, gin.H{
-		//	"reload": true,
-		//}, "您的帐户异地登陆或令牌失效", c)
-		//c.Abort()
-		//return
+		if jwt_black_service.IsBlacklist(token, modelToken) {
+			response.Result(response.ERROR, gin.H{
+				"reload": true,
+			}, "您的帐户异地登陆或令牌失效", c)
+			c.Abort()
+			return
+		}
 
 		j := NewJWT()
 		// parseToken 解析token包含的信息
