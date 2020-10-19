@@ -15,7 +15,16 @@ import (
 
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息 这里前端需要把token存储到cookie或者本地localSstorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
+		// 我们这里jwt鉴权取头部信息 x-token 登录时回返回token信息
+		// todo 如果不需要后端控制实效的话，可把token的失效时间 添加到token的第二段：例：
+		// todo payload jwt载荷  格式如下非必须
+		// todo 'iss', //该JWT的签发者
+		// todo 'iat', //签发时间
+		// todo 'exp', //过期时间
+		// todo 'nbf' //该时间之前不接收处理该Token
+		// todo 'sub', //面向的用户
+		// todo 'jti'   //该Token唯一标识
+		// 这里前端需要把token存储到cookie或者本地localSstorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
 		token := c.Request.Header.Get("x-token")
 		modelToken := model.JwtBlacklist{
 			Jwt: token,
